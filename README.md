@@ -1,17 +1,17 @@
-# 🧩 Sistema de Integração com Redes Sociais
+# Sistema de Integração com Redes Sociais
 
 Este projeto implementa um **sistema de integração com múltiplas redes sociais (Twitter, Instagram, LinkedIn e TikTok)** utilizando os padrões de projeto **Adapter** e **Factory Method** em Java.  
 O objetivo é permitir que diferentes APIs de redes sociais sejam utilizadas de forma unificada e extensível, facilitando a adição de novas plataformas sem modificar o código existente.
 
 ---
 
-## 🏗️ Arquitetura e Padrões Utilizados
+## Arquitetura e Padrões Utilizados
 
-### 🔹 Padrão Adapter
+### Padrão Adapter
 O **Adapter** é utilizado para traduzir a interface de cada API de rede social (Twitter, Instagram, LinkedIn e TikTok) para uma interface comum (`SocialMediaAdapter`).  
 Assim, o restante do sistema pode interagir com qualquer rede social da mesma forma.
 
-### 🔹 Padrão Factory
+### Padrão Factory
 O **Factory (`SocialMediaFactory`)** é responsável por instanciar o adaptador correto com base no nome da plataforma informado.  
 Isso elimina a necessidade de criar objetos manualmente e melhora a escalabilidade do sistema.
 
