@@ -1,5 +1,7 @@
 package strategy;
 
-public class SchedulingStrategy {
-    
+import models.Publicacao;
+
+public interface SchedulingStrategy {
+    boolean shouldPublishNow(Publicacao p);
 }
