@@ -1,17 +1,49 @@
 @startuml
+title Sistema de Integração com Redes Sociais
+
 package api {
-  class TwitterApi
-  class InstagramApi
-  class LinkedInApi
-  class TikTokApi
+  class TwitterApi {
+    +postarTweet(mensagem: String)
+    +obterEstatisticasTweet(): int[]
+  }
+
+  class InstagramApi {
+    +publicarFoto(legenda: String, imagemUrl: String)
+    +obterEstatisticasPost(): int[]
+  }
+
+  class LinkedInApi {
+    +compartilharPost(conteudo: String)
+    +obterMetricasPost(): int[]
+  }
+
+  class TikTokApi {
+    +postarVideo(descricao: String, videoUrl: String)
+    +obterEstatisticasVideo(): int[]
+  }
 }
 
 package adapter {
-  interface SocialMediaAdapter<T>
-  class TwitterAdapter
-  class InstagramAdapter
-  class LinkedInAdapter
-  class TikTokAdapter
+  interface SocialMediaAdapter {
+    +publicar(usuario: String, conteudo: Conteudo)
+    +getEstatisticas(usuario: String): Estatisticas
+  }
+
+  class TwitterAdapter {
+    -twitterApi: TwitterApi
+  }
+
+  class InstagramAdapter {
+    -instagramApi: InstagramApi
+  }
+
+  class LinkedInAdapter {
+    -linkedinApi: LinkedInApi
+  }
+
+  class TikTokAdapter {
+    -tikTokApi: TikTokApi
+  }
 
   SocialMediaAdapter <|.. TwitterAdapter
   SocialMediaAdapter <|.. InstagramAdapter
@@ -20,26 +52,30 @@ package adapter {
 }
 
 package model {
-  class Conteudo
-  class Publicacao
-  class Estatisticas
+  class Conteudo {
+    -texto: String
+    -imagemUrl: String
+    +getTexto(): String
+    +getImagemUrl(): String
+  }
+
+  class Estatisticas {
+    -curtidas: int
+    -comentarios: int
+    -compartilhamentos: int
+    +toString(): String
+  }
 }
 
 package factory {
-  class SocialMediaFactory
+  class SocialMediaFactory {
+    +criar(plataforma: String): SocialMediaAdapter
+  }
 }
 
-package strategy {
-  interface SchedulingStrategy
-  class ImmediateStrategy
-  class ScheduledStrategy
-  SchedulingStrategy <|.. ImmediateStrategy
-  SchedulingStrategy <|.. ScheduledStrategy
-}
+class Main
 
-package core {
-  class GerenciadorMidiaSocial
-}
+' ======= RELACIONAMENTOS =======
 
 api.TwitterApi --> adapter.TwitterAdapter
 api.InstagramApi --> adapter.InstagramAdapter
@@ -48,7 +84,17 @@ api.TikTokApi --> adapter.TikTokAdapter
 
 adapter.TwitterAdapter --> model.Conteudo
 adapter.InstagramAdapter --> model.Conteudo
-core.GerenciadorMidiaSocial --> adapter.SocialMediaAdapter
-core.GerenciadorMidiaSocial --> factory.SocialMediaFactory
-core.GerenciadorMidiaSocial --> strategy.SchedulingStrategy
+adapter.LinkedInAdapter --> model.Conteudo
+adapter.TikTokAdapter --> model.Conteudo
+
+adapter.TwitterAdapter --> model.Estatisticas
+adapter.InstagramAdapter --> model.Estatisticas
+adapter.LinkedInAdapter --> model.Estatisticas
+adapter.TikTokAdapter --> model.Estatisticas
+
+Main --> factory.SocialMediaFactory
+Main --> adapter.SocialMediaAdapter
+Main --> model.Conteudo
+Main --> model.Estatisticas
+
 @enduml
