@@ -17,7 +17,7 @@ Isso elimina a necessidade de criar objetos manualmente e melhora a escalabilida
 
 ---
 
-## ⚙️ Funcionamento
+## Funcionamento
 
 1. O usuário cria um objeto `Conteudo`, que representa a publicação (texto e imagem/vídeo).  
 2. A **fábrica (`SocialMediaFactory`)** recebe o nome da plataforma e retorna o adaptador correspondente.  
