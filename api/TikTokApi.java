@@ -2,7 +2,7 @@ package api;
 
 public class TikTokApi {
     public boolean authorize(String oAuthToken) {
-        return oAuthToken != null && !oAuthToken.isBlank();
+        return oAuthToken != null && !oAuthToken.trim().isEmpty();
     }
 
     public String uploadVideo(String description, String videoUrl) {

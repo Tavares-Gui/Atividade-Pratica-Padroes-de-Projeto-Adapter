@@ -1,0 +1,54 @@
+@startuml
+package api {
+  class TwitterApi
+  class InstagramApi
+  class LinkedInApi
+  class TikTokApi
+}
+
+package adapter {
+  interface SocialMediaAdapter<T>
+  class TwitterAdapter
+  class InstagramAdapter
+  class LinkedInAdapter
+  class TikTokAdapter
+
+  SocialMediaAdapter <|.. TwitterAdapter
+  SocialMediaAdapter <|.. InstagramAdapter
+  SocialMediaAdapter <|.. LinkedInAdapter
+  SocialMediaAdapter <|.. TikTokAdapter
+}
+
+package model {
+  class Conteudo
+  class Publicacao
+  class Estatisticas
+}
+
+package factory {
+  class SocialMediaFactory
+}
+
+package strategy {
+  interface SchedulingStrategy
+  class ImmediateStrategy
+  class ScheduledStrategy
+  SchedulingStrategy <|.. ImmediateStrategy
+  SchedulingStrategy <|.. ScheduledStrategy
+}
+
+package core {
+  class GerenciadorMidiaSocial
+}
+
+api.TwitterApi --> adapter.TwitterAdapter
+api.InstagramApi --> adapter.InstagramAdapter
+api.LinkedInApi --> adapter.LinkedInAdapter
+api.TikTokApi --> adapter.TikTokAdapter
+
+adapter.TwitterAdapter --> model.Conteudo
+adapter.InstagramAdapter --> model.Conteudo
+core.GerenciadorMidiaSocial --> adapter.SocialMediaAdapter
+core.GerenciadorMidiaSocial --> factory.SocialMediaFactory
+core.GerenciadorMidiaSocial --> strategy.SchedulingStrategy
+@enduml

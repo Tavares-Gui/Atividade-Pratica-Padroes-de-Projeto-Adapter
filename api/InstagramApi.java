@@ -2,7 +2,7 @@ package api;
 
 public class InstagramApi {
     public boolean login(String token) {
-        return token != null && !token.isBlank();
+        return token != null && !token.trim().isEmpty();
     }
 
     public String createPost(String caption, String mediaUrl) {
