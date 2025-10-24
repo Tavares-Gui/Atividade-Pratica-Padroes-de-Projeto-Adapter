@@ -1,7 +1,7 @@
 package strategy;
 
-import models.Publicacao;
+import model.Publicacao;
 
 public interface SchedulingStrategy {
-    boolean shouldPublishNow(Publicacao p);
+    boolean execute(Publicacao publicacao) throws Exception;
 }

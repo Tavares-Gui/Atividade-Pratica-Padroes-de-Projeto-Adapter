@@ -1,11 +1,10 @@
 package strategy;
 
-import models.Publicacao;
-import java.time.Instant;
+import model.Publicacao;
 
 public class ImmediateStrategy implements SchedulingStrategy {
     @Override
-    public boolean shouldPublishNow(Publicacao p) {
-        return p.getAgendamento() == null || !p.getAgendamento().isAfter(Instant.now());
+    public boolean execute(Publicacao publicacao) {
+        return true;
     }
 }

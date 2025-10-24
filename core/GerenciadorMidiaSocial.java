@@ -1,95 +1,86 @@
 package core;
 
-import adapters.SocialMediaAdapter;
-import models.Publicacao;
-import models.Estatisticas;
+import adapter.SocialMediaAdapter;
+import exception.AdapterException;
+import exception.PublicacaoException;
+import factory.SocialMediaFactory;
+import model.Conteudo;
+import model.Estatisticas;
+import model.Publicacao;
 import strategy.SchedulingStrategy;
-import exceptions.SocialMediaException;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GerenciadorMidiaSocial {
-    private final ConcurrentMap<String, SocialMediaAdapter> adapters = new ConcurrentHashMap<>();
+    private final SocialMediaFactory factory;
+    private final ConcurrentMap<String, SocialMediaAdapter<?>> adapters = new ConcurrentHashMap<>();
     private final ExecutorService executor;
-    private final AtomicInteger publishedCount = new AtomicInteger(0);
-    private SchedulingStrategy schedulingStrategy;
+    private final ConcurrentMap<String, Object> configs = new ConcurrentHashMap<>();
 
-    public GerenciadorMidiaSocial(int threads, SchedulingStrategy schedulingStrategy) {
-        this.executor = Executors.newFixedThreadPool(threads);
-        this.schedulingStrategy = schedulingStrategy;
+    public GerenciadorMidiaSocial(SocialMediaFactory factory) {
+        this.factory = factory;
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
-    public void registerPlatform(String key, SocialMediaAdapter adapter) {
-        adapters.put(key.toLowerCase(), adapter);
-    }
-
-    public void unregisterPlatform(String key) {
-        adapters.remove(key.toLowerCase());
-    }
-
-    public Set<String> registeredPlatforms() { return Collections.unmodifiableSet(adapters.keySet()); }
-
-    public Map<String, Response<String>> publishToAll(Publicacao p) {
-        Map<String, Future<Response<String>>> futures = new HashMap<>();
-        for (Map.Entry<String, SocialMediaAdapter> e : adapters.entrySet()) {
-            String platform = e.getKey();
-            SocialMediaAdapter adapter = e.getValue();
-
-            if (!schedulingStrategy.shouldPublishNow(p)) {
-                futures.put(platform, CompletableFuture.completedFuture(Response.fail("Scheduled for later")));
-                continue;
-            }
-
-            Future<Response<String>> f = executor.submit(() -> {
-                try {
-                    Object id = adapter.publish(p);
-                    publishedCount.incrementAndGet();
-                    return Response.ok(id.toString());
-                } catch (SocialMediaException ex) {
-                    return Response.fail(ex.getMessage());
-                } catch (Exception ex) {
-                    return Response.fail("Unexpected: " + ex.getMessage());
-                }
-            });
-            futures.put(platform, f);
+    public synchronized <C> void conectarPlataforma(String plataforma, C config) throws AdapterException {
+        Objects.requireNonNull(plataforma);
+        if (!factory.isRegistered(plataforma)) {
+            throw new AdapterException("Plataforma não registrada na factory: " + plataforma);
         }
+        SocialMediaAdapter<C> adapter = (SocialMediaAdapter<C>) factory.create(plataforma);
+        boolean ok = adapter.conectar(config);
+        if (!ok) throw new AdapterException("Falha na conexão com " + plataforma);
+        adapters.put(plataforma.toLowerCase(), adapter);
+        configs.put(plataforma.toLowerCase(), config);
+    }
 
-        Map<String, Response<String>> results = new HashMap<>();
-        for (Map.Entry<String, Future<Response<String>>> entry : futures.entrySet()) {
-            String platform = entry.getKey();
-            Future<Response<String>> f = entry.getValue();
+    public Future<String> publicar(String plataforma, Conteudo conteudo, SchedulingStrategy strategy, LocalDateTime agendadaPara) throws PublicacaoException {
+        SocialMediaAdapter<?> adapter = adapters.get(plataforma.toLowerCase());
+        if (adapter == null) throw new PublicacaoException("Adapter não conectado para: " + plataforma);
+
+        Publicacao publicacao = new Publicacao(plataforma.toLowerCase(), conteudo, agendadaPara);
+
+        if (agendadaPara != null && agendadaPara.isAfter(LocalDateTime.now())) {
+            long delayMillis = java.time.Duration.between(LocalDateTime.now(), agendadaPara).toMillis();
+            return scheduleWithDelay(() -> doPublish(adapter, publicacao), delayMillis);
+        } else {
+            return executor.submit(() -> doPublish(adapter, publicacao));
+        }
+    }
+
+    private Future<String> scheduleWithDelay(Callable<String> task, long delayMillis) {
+        ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+        CompletableFuture<String> promise = new CompletableFuture<>();
+        ses.schedule(() -> {
             try {
-                Response<String> r = f.get(10, TimeUnit.SECONDS);
-                results.put(platform, r);
-            } catch (TimeoutException te) {
-                results.put(platform, Response.fail("Timeout while publishing"));
-            } catch (Exception ex) {
-                results.put(platform, Response.fail("Publish error: " + ex.getMessage()));
+                String result = task.call();
+                promise.complete(result);
+            } catch (Throwable t) {
+                promise.completeExceptionally(t);
+            } finally {
+                ses.shutdown();
             }
-        }
-        return results;
+        }, delayMillis, TimeUnit.MILLISECONDS);
+        return promise;
     }
 
-    public Map<String, Response<Estatisticas>> fetchStats(Collection<String> platformKeys, String postId) {
-        Map<String, Response<Estatisticas>> out = new HashMap<>();
-        for (String key : platformKeys) {
-            SocialMediaAdapter adapter = adapters.get(key.toLowerCase());
-            if (adapter == null) { out.put(key, Response.fail("Platform not registered")); continue; }
-            try {
-                Estatisticas s = adapter.fetchStats(postId);
-                out.put(key, Response.ok(s));
-            } catch (SocialMediaException e) {
-                out.put(key, Response.fail(e.getMessage()));
-            } catch (Exception e) {
-                out.put(key, Response.fail("Unexpected: " + e.getMessage()));
-            }
+    private String doPublish(SocialMediaAdapter<?> adapter, Publicacao publicacao) throws PublicacaoException {
+        try {
+            String ref = adapter.publicar(publicacao.getConteudo());
+            return ref;
+        } catch (Exception e) {
+            throw new PublicacaoException("Erro ao publicar em " + publicacao.getPlataforma(), e);
         }
-        return out;
     }
 
-    public int getPublishedCount() { return publishedCount.get(); }
+    public Estatisticas buscarEstatisticas(String plataforma, String referencia) throws AdapterException {
+        SocialMediaAdapter<?> adapter = adapters.get(plataforma.toLowerCase());
+        if (adapter == null) throw new AdapterException("Adapter não conectado para: " + plataforma);
+        return adapter.buscarEstatisticas(referencia);
+    }
 
     public void shutdown() {
         executor.shutdown();
