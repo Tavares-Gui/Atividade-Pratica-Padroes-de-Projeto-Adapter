@@ -1,29 +1,19 @@
 package model;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 public class Conteudo {
-    private final String texto;
-    private final String mediaUrl;
-    private final LocalDateTime criadoEm;
+    private String texto;
+    private String imagemUrl;
 
-    public Conteudo(String texto, String mediaUrl) {
+    public Conteudo(String texto, String imagemUrl) {
         this.texto = texto;
-        this.mediaUrl = mediaUrl;
-        this.criadoEm = LocalDateTime.now();
+        this.imagemUrl = imagemUrl;
     }
 
-    public String getTexto() { return texto; }
-    public String getMediaUrl() { return mediaUrl; }
-    public LocalDateTime getCriadoEm() { return criadoEm; }
+    public String getTexto() {
+        return texto;
+    }
 
-    @Override
-    public String toString() {
-        return "Conteudo{" +
-                "texto='" + texto + '\'' +
-                ", mediaUrl='" + mediaUrl + '\'' +
-                ", criadoEm=" + criadoEm +
-                '}';
+    public String getImagemUrl() {
+        return imagemUrl;
     }
 }

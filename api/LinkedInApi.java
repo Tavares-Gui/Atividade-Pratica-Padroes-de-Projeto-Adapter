@@ -1,15 +1,11 @@
 package api;
 
 public class LinkedInApi {
-    public boolean connect(String clientId, String clientSecret) {
-        return clientId != null && clientSecret != null;
+    public void compartilharPost(String conteudo) {
+        System.out.println("[LinkedIn] Compartilhando post: " + conteudo);
     }
 
-    public String share(String titulo, String texto) {
-        return "li_" + System.currentTimeMillis();
-    }
-
-    public String fetchAnalytics(String shareId) {
-        return "{\"views\":200,\"interactions\":20}";
+    public int[] obterMetricasPost() {
+        return new int[]{90, 25, 10};
     }
 }

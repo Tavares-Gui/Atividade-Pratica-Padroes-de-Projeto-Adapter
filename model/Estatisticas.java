@@ -1,28 +1,18 @@
 package model;
 
-import java.util.Map;
-
 public class Estatisticas {
-    private final String plataforma;
-    private final String referencia;
-    private final Map<String, Object> metrics;
+    private int curtidas;
+    private int comentarios;
+    private int compartilhamentos;
 
-    public Estatisticas(String plataforma, String referencia, Map<String, Object> metrics) {
-        this.plataforma = plataforma;
-        this.referencia = referencia;
-        this.metrics = metrics;
+    public Estatisticas(int curtidas, int comentarios, int compartilhamentos) {
+        this.curtidas = curtidas;
+        this.comentarios = comentarios;
+        this.compartilhamentos = compartilhamentos;
     }
-
-    public String getPlataforma() { return plataforma; }
-    public String getReferencia() { return referencia; }
-    public Map<String, Object> getMetrics() { return metrics; }
 
     @Override
     public String toString() {
-        return "Estatisticas{" +
-                "plataforma='" + plataforma + '\'' +
-                ", referencia='" + referencia + '\'' +
-                ", metrics=" + metrics +
-                '}';
+        return "Curtidas: " + curtidas + ", Comentarios: " + comentarios + ", Compartilhamentos: " + compartilhamentos;
     }
 }

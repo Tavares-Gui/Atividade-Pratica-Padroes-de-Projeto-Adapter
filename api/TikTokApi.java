@@ -1,15 +1,11 @@
 package api;
 
 public class TikTokApi {
-    public boolean authorize(String oAuthToken) {
-        return oAuthToken != null && !oAuthToken.trim().isEmpty();
+    public void postarVideo(String descricao, String videoUrl) {
+        System.out.println("[TikTok] Publicando video: " + videoUrl + " com descricao: " + descricao);
     }
 
-    public String uploadVideo(String description, String videoUrl) {
-        return "tt_" + System.currentTimeMillis();
-    }
-
-    public String getStats(String videoId) {
-        return "{\"views\":1000,\"likes\":150}";
+    public int[] obterEstatisticasVideo() {
+        return new int[]{500, 120, 60};
     }
 }

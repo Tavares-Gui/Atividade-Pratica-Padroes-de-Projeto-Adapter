@@ -1,15 +1,11 @@
 package api;
 
 public class InstagramApi {
-    public boolean login(String token) {
-        return token != null && !token.trim().isEmpty();
+    public void publicarFoto(String legenda, String imagemUrl) {
+        System.out.println("[Instagram] Publicando foto: " + imagemUrl + " com legenda: " + legenda);
     }
 
-    public String createPost(String caption, String mediaUrl) {
-        return "ig_" + System.currentTimeMillis();
-    }
-
-    public String getInsights(String postId) {
-        return "{\"likes\":50,\"comments\":5}";
+    public int[] obterEstatisticasPost() {
+        return new int[]{250, 80, 20};
     }
 }

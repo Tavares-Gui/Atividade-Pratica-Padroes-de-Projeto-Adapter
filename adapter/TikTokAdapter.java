@@ -1,51 +1,21 @@
 package adapter;
 
 import api.TikTokApi;
-import exception.AdapterException;
 import model.Conteudo;
 import model.Estatisticas;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class TikTokAdapter implements SocialMediaAdapter<String> {
-    private final TikTokApi api;
-    private boolean conectado = false;
-
-    public TikTokAdapter(TikTokApi api) { this.api = api; }
+public class TikTokAdapter implements SocialMediaAdapter {
+    private TikTokApi tikTokApi = new TikTokApi();
 
     @Override
-    public boolean conectar(String config) throws AdapterException {
-        try {
-            conectado = api.authorize(config);
-            return conectado;
-        } catch (Exception e) {
-            throw new AdapterException("Erro ao conectar TikTok", e);
-        }
+    public void publicar(String usuario, Conteudo conteudo) {
+        tikTokApi.postarVideo(conteudo.getTexto(), conteudo.getImagemUrl());
     }
 
     @Override
-    public String publicar(Conteudo conteudo) throws AdapterException {
-        if (!conectado) throw new AdapterException("TikTok nao conectado");
-        try {
-            return api.uploadVideo(conteudo.getTexto(), conteudo.getMediaUrl());
-        } catch (Exception e) {
-            throw new AdapterException("Erro ao publicar no TikTok", e);
-        }
+    public Estatisticas getEstatisticas(String usuario) {
+        int[] dados = tikTokApi.obterEstatisticasVideo();
+        return new Estatisticas(dados[0], dados[1], dados[2]);
     }
-
-    @Override
-    public Estatisticas buscarEstatisticas(String referencia) throws AdapterException {
-        try {
-            String raw = api.getStats(referencia);
-            Map<String, Object> metrics = new HashMap<>();
-            metrics.put("raw", raw);
-            return new Estatisticas(plataforma(), referencia, metrics);
-        } catch (Exception e) {
-            throw new AdapterException("Erro ao buscar estatisticas no TikTok", e);
-        }
-    }
-
-    @Override
-    public String plataforma() { return "tiktok"; }
+    
 }

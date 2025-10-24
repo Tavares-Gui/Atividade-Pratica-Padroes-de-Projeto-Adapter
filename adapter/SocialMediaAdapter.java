@@ -1,15 +1,8 @@
 package adapter;
 
-import exception.AdapterException;
-import model.Conteudo;
-import model.Estatisticas;
+import model.*;
 
-public interface SocialMediaAdapter<T> {
-    boolean conectar(T config) throws AdapterException;
-
-    String publicar(Conteudo conteudo) throws AdapterException;
-
-    Estatisticas buscarEstatisticas(String referencia) throws AdapterException;
-
-    String plataforma();
+public interface SocialMediaAdapter {
+    public void publicar(String usuario, Conteudo conteudo);
+    public Estatisticas getEstatisticas(String usuario);
 }
