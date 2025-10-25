@@ -4,7 +4,7 @@ import api.TwitterApi;
 import model.Conteudo;
 import model.Estatisticas;
 
-public class TwitterAdapter implements SocialMediaAdapter {
+public class TwitterAdapter implements SocialMediaAdapterInterface {
     private TwitterApi twitterApi = new TwitterApi();
 
     @Override

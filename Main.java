@@ -1,14 +1,14 @@
-import adapter.SocialMediaAdapter;
+import adapter.SocialMediaAdapterInterface;
 import model.Conteudo;
 
 public class Main {
     public static void main(String[] args) {
         Conteudo conteudo = new Conteudo("Novo video", "video.mp4");
 
-        SocialMediaAdapter instagram = SocialMediaFactory.criar("instagram");
-        SocialMediaAdapter linkedin = SocialMediaFactory.criar("linkedin");
-        SocialMediaAdapter tiktok = SocialMediaFactory.criar("tiktok");
-        SocialMediaAdapter twitter = SocialMediaFactory.criar("twitter");
+        SocialMediaAdapterInterface instagram = SocialMediaFactory.criar("instagram");
+        SocialMediaAdapterInterface linkedin = SocialMediaFactory.criar("linkedin");
+        SocialMediaAdapterInterface tiktok = SocialMediaFactory.criar("tiktok");
+        SocialMediaAdapterInterface twitter = SocialMediaFactory.criar("twitter");
 
         instagram.publicar("TESTE-USUARIO", conteudo);
         linkedin.publicar("TESTE-USUARIO", conteudo);

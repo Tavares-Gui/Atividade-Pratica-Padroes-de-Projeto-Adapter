@@ -1,7 +1,7 @@
 import adapter.*;
 
 public class SocialMediaFactory {
-    public static SocialMediaAdapter criar(String plataforma) {
+    public static SocialMediaAdapterInterface criar(String plataforma) {
         if (plataforma == null) {
             return null;
         }

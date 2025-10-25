@@ -4,7 +4,7 @@ import api.LinkedInApi;
 import model.Conteudo;
 import model.Estatisticas;
 
-public class LinkedInAdapter implements SocialMediaAdapter {
+public class LinkedInAdapter implements SocialMediaAdapterInterface {
     private LinkedInApi linkedinApi = new LinkedInApi();
 
     @Override

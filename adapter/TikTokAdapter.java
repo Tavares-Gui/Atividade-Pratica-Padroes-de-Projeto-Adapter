@@ -4,7 +4,7 @@ import api.TikTokApi;
 import model.Conteudo;
 import model.Estatisticas;
 
-public class TikTokAdapter implements SocialMediaAdapter {
+public class TikTokAdapter implements SocialMediaAdapterInterface {
     private TikTokApi tikTokApi = new TikTokApi();
 
     @Override

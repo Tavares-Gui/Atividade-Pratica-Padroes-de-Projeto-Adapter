@@ -23,5 +23,3 @@ Isso elimina a necessidade de criar objetos manualmente e melhora a escalabilida
 2. A **fábrica (`SocialMediaFactory`)** recebe o nome da plataforma e retorna o adaptador correspondente.  
 3. Cada adaptador traduz a chamada genérica em chamadas específicas da API da plataforma.  
 4. O sistema pode publicar o conteúdo e obter estatísticas de desempenho de cada rede.
-
-

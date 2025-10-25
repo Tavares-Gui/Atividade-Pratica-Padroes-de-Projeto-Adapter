@@ -4,7 +4,7 @@ import api.InstagramApi;
 import model.Conteudo;
 import model.Estatisticas;
 
-public class InstagramAdapter implements SocialMediaAdapter {
+public class InstagramAdapter implements SocialMediaAdapterInterface {
     private InstagramApi instagramApi = new InstagramApi();
 
     @Override
